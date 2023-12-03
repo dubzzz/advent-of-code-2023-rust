@@ -7,9 +7,9 @@ fn main() {
 
     let response = part1::run(input);
     println!("Response #1 is: {response}");
-    //assert_eq!(response, 527369);
+    assert_eq!(response, 527369);
 
     let response = part2::run(input);
     println!("Response #2 is: {response}");
-    //assert_eq!(response, 527369);
+    assert_eq!(response, 73074886);
 }
