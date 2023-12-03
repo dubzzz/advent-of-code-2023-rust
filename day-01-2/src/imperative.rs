@@ -1,44 +1,37 @@
-fn extract_left_value(entry: &str) -> u32 {
-    let digits_letter = [
-        "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
-    ];
-    for length in 1..=entry.len() {
-        let sub_str_start: &str = &entry[..length];
+use std::str::FromStr;
+
+fn find_digit(value: &str, digits_letter: &[String]) -> Option<u32> {
+    for length in 1..=value.len() {
+        let sub_str_start: &str = &value[..length];
         for (index, repr) in digits_letter.iter().enumerate() {
             if sub_str_start.ends_with(repr) {
-                return index as u32;
+                return Some(index as u32);
             }
         }
         let last = sub_str_start.chars().last();
-        if last.map(|c| c.is_ascii_digit()).unwrap_or_default() {
-            return last.and_then(|c| c.to_digit(10)).unwrap();
+        let last_as_number = last.and_then(|c| c.to_digit(10));
+        if last_as_number.is_some() {
+            return last_as_number;
         }
     }
-    return 0;
+    return None;
 }
 
-fn extract_right_value(entry: &str) -> u32 {
-    let digits_letter = [
+fn extract_value(value: &str) -> u32 {
+    let raw_digits_letter = [
         "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
     ];
-    for length in 1..=entry.len() {
-        let start = entry.len() - length;
-        let sub_str_end: &str = &entry[start..];
-        for (index, repr) in digits_letter.iter().enumerate() {
-            if sub_str_end.starts_with(repr) {
-                return index as u32;
-            }
-        }
-        let first = sub_str_end.chars().nth(0);
-        if first.map(|c| c.is_ascii_digit()).unwrap_or_default() {
-            return first.and_then(|c| c.to_digit(10)).unwrap();
-        }
-    }
-    return 0;
-}
 
-fn extract_value(entry: &str) -> u32 {
-    return extract_left_value(entry) * 10 + extract_right_value(entry);
+    let digits_letter: [String; 10] =
+        raw_digits_letter.map(|digit_str| String::from_str(digit_str).unwrap());
+    let left_digit = find_digit(value, &digits_letter);
+
+    let rev_value: String = value.chars().rev().collect();
+    let rev_digits_letter: [String; 10] =
+        digits_letter.map(|digit_str| digit_str.chars().rev().collect());
+    let right_digit = find_digit(&rev_value, &rev_digits_letter);
+
+    return left_digit.unwrap() * 10 + right_digit.unwrap();
 }
 
 pub fn run(corpus: &str) -> u32 {
