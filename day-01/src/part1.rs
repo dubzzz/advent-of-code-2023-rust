@@ -1,5 +1,3 @@
-mod data;
-
 fn find_digit(mut chars: impl Iterator<Item = char>) -> Option<u32> {
     chars
         .find(|c| c.is_ascii_digit())
@@ -12,14 +10,6 @@ fn extract_value(entry: &str) -> u32 {
     return first.unwrap() * 10 + last.unwrap();
 }
 
-fn run(corpus: &str) -> u32 {
+pub fn run(corpus: &str) -> u32 {
     corpus.split('\n').map(extract_value).sum()
-}
-
-fn main() {
-    let input = data::get();
-
-    let response = run(input);
-    println!("Response is: {response}");
-    assert_eq!(response, 54304);
 }
