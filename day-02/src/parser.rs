@@ -1,16 +1,14 @@
-mod data;
-
 #[derive(Clone)]
-struct ParsedTurn {
-    red: u32,
-    green: u32,
-    blue: u32,
+pub struct ParsedTurn {
+    pub red: u32,
+    pub green: u32,
+    pub blue: u32,
 }
 
 #[derive(Clone)]
-struct ParsedGame {
-    id: u32,
-    turns: Vec<ParsedTurn>,
+pub struct ParsedGame {
+    pub id: u32,
+    pub turns: Vec<ParsedTurn>,
 }
 
 fn parse_turn(turn_str: &str) -> Result<ParsedTurn, &str> {
@@ -48,7 +46,7 @@ fn parse_turn(turn_str: &str) -> Result<ParsedTurn, &str> {
     )
 }
 
-fn parse_game(game_str: &str) -> Result<ParsedGame, &str> {
+pub fn parse_game(game_str: &str) -> Result<ParsedGame, &str> {
     if !game_str.starts_with("Game ") {
         return Err("Not starting by Game");
     }
@@ -72,60 +70,4 @@ fn parse_game(game_str: &str) -> Result<ParsedGame, &str> {
         turns: turns.to_vec(),
     };
     return Ok(parsed);
-}
-
-fn run1(corpus: &str) -> u32 {
-    let games = corpus.split('\n').map(parse_game);
-    games
-        .map(|parsed| {
-            parsed
-                .map(|game| {
-                    if game
-                        .turns
-                        .iter()
-                        .all(|turn| turn.red <= 12 && turn.green <= 13 && turn.blue <= 14)
-                    {
-                        game.id
-                    } else {
-                        0
-                    }
-                })
-                .unwrap_or_default()
-        })
-        .sum()
-}
-
-fn run2(corpus: &str) -> u32 {
-    let games = corpus.split('\n').map(parse_game);
-    games
-        .map(|parsed| -> u32 {
-            let parsed = parsed.unwrap();
-            let max_reds = parsed.turns.iter().map(|t| t.red).max().unwrap_or_default();
-            let max_greens = parsed
-                .turns
-                .iter()
-                .map(|t| t.green)
-                .max()
-                .unwrap_or_default();
-            let max_blues = parsed
-                .turns
-                .iter()
-                .map(|t| t.blue)
-                .max()
-                .unwrap_or_default();
-            max_reds * max_greens * max_blues
-        })
-        .sum()
-}
-
-fn main() {
-    let input = data::get();
-
-    let response = run1(input);
-    println!("Response #1 is: {response}");
-    assert_eq!(response, 2369);
-
-    let response = run2(input);
-    println!("Response #2 is: {response}");
-    assert_eq!(response, 66363);
 }
