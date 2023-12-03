@@ -19,23 +19,18 @@ fn parse_turn(turn_str: &str) -> Result<ParsedTurn, &str> {
     let mut green: u32 = 0;
     let mut blue: u32 = 0;
     for member in turn_members {
-        let count_end = member.find(' ');
-        if count_end.is_none() {
-            return Err("Unable to find the end of the count in the member");
-        }
-        let count_end = count_end.unwrap();
-        let count = &member[..count_end];
-        let count = count.parse::<u32>();
-        if count.is_err() {
-            return Err("Unable to parse the count as numeric");
-        }
-        let count = count.unwrap();
-        match &member[(count_end + 1)..] {
-            "red" => red = count,
-            "green" => green = count,
-            "blue" => blue = count,
-            _ => (),
-        }
+        match member.find(' ') {
+            None => return Err("Unable to find the end of the count in the member"),
+            Some(count_end) => match &member[..count_end].parse::<u32>() {
+                Err(_) => return Err("Unable to parse the count as numeric"),
+                Ok(count) => match &member[(count_end + 1)..] {
+                    "red" => red = *count,
+                    "green" => green = *count,
+                    "blue" => blue = *count,
+                    _ => return Err("Non-existing category"),
+                },
+            },
+        };
     }
     return Ok(ParsedTurn { red, green, blue });
 }
