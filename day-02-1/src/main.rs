@@ -74,7 +74,7 @@ fn parse_game(game_str: &str) -> Result<ParsedGame, &str> {
     return Ok(parsed);
 }
 
-fn run(corpus: &str) -> u32 {
+fn run1(corpus: &str) -> u32 {
     let games = corpus.split('\n').map(parse_game);
     games
         .map(|parsed| {
@@ -95,10 +95,37 @@ fn run(corpus: &str) -> u32 {
         .sum()
 }
 
+fn run2(corpus: &str) -> u32 {
+    let games = corpus.split('\n').map(parse_game);
+    games
+        .map(|parsed| -> u32 {
+            let parsed = parsed.unwrap();
+            let max_reds = parsed.turns.iter().map(|t| t.red).max().unwrap_or_default();
+            let max_greens = parsed
+                .turns
+                .iter()
+                .map(|t| t.green)
+                .max()
+                .unwrap_or_default();
+            let max_blues = parsed
+                .turns
+                .iter()
+                .map(|t| t.blue)
+                .max()
+                .unwrap_or_default();
+            max_reds * max_greens * max_blues
+        })
+        .sum()
+}
+
 fn main() {
     let input = data::get();
 
-    let response = run(input);
-    println!("Response is: {response}");
+    let response = run1(input);
+    println!("Response #1 is: {response}");
     assert_eq!(response, 2369);
+
+    let response = run2(input);
+    println!("Response #2 is: {response}");
+    assert_eq!(response, 66363);
 }
