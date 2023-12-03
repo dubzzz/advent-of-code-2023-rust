@@ -14,25 +14,38 @@ struct ParsedGame {
 }
 
 fn parse_turn(turn_str: &str) -> Result<ParsedTurn, &str> {
-    let turn_members = turn_str.split(',').map(|member| member.trim());
-    let mut red: u32 = 0;
-    let mut green: u32 = 0;
-    let mut blue: u32 = 0;
-    for member in turn_members {
-        match member.find(' ') {
-            None => return Err("Unable to find the end of the count in the member"),
-            Some(count_end) => match &member[..count_end].parse::<u32>() {
-                Err(_) => return Err("Unable to parse the count as numeric"),
-                Ok(count) => match &member[(count_end + 1)..] {
-                    "red" => red = *count,
-                    "green" => green = *count,
-                    "blue" => blue = *count,
-                    _ => return Err("Non-existing category"),
+    let empty_parsed = ParsedTurn {
+        red: 0,
+        green: 0,
+        blue: 0,
+    };
+    turn_str.split(',').map(|member| member.trim()).fold(
+        Ok(empty_parsed),
+        |acc, member| match acc {
+            Ok(parsed) => match member.find(' ') {
+                None => Err("Unable to find the end of the count in the member"),
+                Some(count_end) => match &member[..count_end].parse::<u32>() {
+                    Err(_) => Err("Unable to parse the count as numeric"),
+                    Ok(count) => match &member[(count_end + 1)..] {
+                        "red" => Ok(ParsedTurn {
+                            red: *count,
+                            ..parsed
+                        }),
+                        "green" => Ok(ParsedTurn {
+                            green: *count,
+                            ..parsed
+                        }),
+                        "blue" => Ok(ParsedTurn {
+                            blue: *count,
+                            ..parsed
+                        }),
+                        _ => Err("Non-existing category"),
+                    },
                 },
             },
-        };
-    }
-    return Ok(ParsedTurn { red, green, blue });
+            other => other,
+        },
+    )
 }
 
 fn parse_game(game_str: &str) -> Result<ParsedGame, &str> {
