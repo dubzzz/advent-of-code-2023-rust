@@ -38,7 +38,6 @@ pub fn run(corpus: &str) -> u32 {
                 continue;
             }
 
-            println!("Found star at {} x {}", line_index, row_index);
             let mut nums: Vec<u32> = Vec::new();
 
             // Line Above
@@ -50,7 +49,6 @@ pub fn run(corpus: &str) -> u32 {
                         || (range.0 <= row_index && row_index < range.1)
                         || (range.0 <= row_index + 1 && row_index + 1 < range.1)
                     {
-                        println!("Matching range (above): {:?}", range);
                         let line = matrix.get(line_index - 1).unwrap();
                         nums.push(
                             String::from_iter(&line[range.0..range.1])
@@ -69,7 +67,6 @@ pub fn run(corpus: &str) -> u32 {
                     || (range.0 <= row_index && row_index < range.1)
                     || (range.0 <= row_index + 1 && row_index + 1 < range.1)
                 {
-                    println!("Matching range (current): {:?}", range);
                     nums.push(
                         String::from_iter(&line[range.0..range.1])
                             .parse::<u32>()
@@ -86,7 +83,6 @@ pub fn run(corpus: &str) -> u32 {
                     || (range.0 <= row_index && row_index < range.1)
                     || (range.0 <= row_index + 1 && row_index + 1 < range.1)
                 {
-                    println!("Matching range (below): {:?}", range);
                     let line = matrix.get(line_index + 1).unwrap();
                     nums.push(
                         String::from_iter(&line[range.0..range.1])
@@ -96,7 +92,6 @@ pub fn run(corpus: &str) -> u32 {
                 }
             }
 
-            println!("With nums: {:?}", nums);
             if nums.len() == 2 {
                 sum += nums.get(0).unwrap() * nums.get(1).unwrap();
             }
